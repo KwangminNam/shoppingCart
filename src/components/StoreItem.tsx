@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card , Button } from "react-bootstrap";
 import formatCurrency from "../utillites/formatCurrency";
+import {useShoppingCart} from "../context/ShoppingCartContext"
 
 type StoreItemProps = {
   id:number,
@@ -9,13 +10,9 @@ type StoreItemProps = {
   imgUrl:string
 }
 const StoreItem = ({id,name,price,imgUrl} : StoreItemProps) => {
-
-  let quanitiy = 1;
-
-  const [num,setNum] = useState(0);
-  const addProduct = () => {
-    setNum(prev=>prev+1);
-  }
+ 
+  const {getItemQ,increaseQ,decreseQ,removeQ} = useShoppingCart()
+  const qua = getItemQ(id)
 
   return (
     <Card className="h-100">
@@ -31,14 +28,25 @@ const StoreItem = ({id,name,price,imgUrl} : StoreItemProps) => {
           <span className="ms-2 text-muted">{formatCurrency(price)}</span>
         </Card.Title>
         <div className="mt-auto">
-          {num === 1 ? 
-            (<Button className="w-100">+Add to Cart</Button>)
+          {qua === 0 ? 
+            (<Button className="w-100" onClick={()=>increaseQ(id)} >+Add to Cart</Button>)
           : <>
-              <Button onClick={addProduct}>ADD</Button>
+              <div className="d-flex align-items-center flex-column" style={{gap:".5rem"}}>
+                <div className="d-flex align-items-center justify-content:center" style={{gap:".5rem"}}>
+                  <Button onClick={()=>decreseQ(id)} >-</Button>
+                  <div>
+                    <span className="fs-3">{qua} in cart</span>
+                  </div>
+                  <Button onClick={()=>increaseQ(id)} >+</Button>
+                </div>
+                <Button variant="danger" size="sm" onClick={()=>removeQ(id)} >REMOVE</Button>
+              </div>
             </>}
         </div>
       </Card.Body>
     </Card>
+
+  
   );
 };
 
