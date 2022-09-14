@@ -1,4 +1,5 @@
-import { Card } from "react-bootstrap";
+import { useState } from "react";
+import { Card , Button } from "react-bootstrap";
 import formatCurrency from "../utillites/formatCurrency";
 
 type StoreItemProps = {
@@ -8,8 +9,16 @@ type StoreItemProps = {
   imgUrl:string
 }
 const StoreItem = ({id,name,price,imgUrl} : StoreItemProps) => {
+
+  let quanitiy = 1;
+
+  const [num,setNum] = useState(0);
+  const addProduct = () => {
+    setNum(prev=>prev+1);
+  }
+
   return (
-    <Card>
+    <Card className="h-100">
       <Card.Img 
         variant="top"
         src={imgUrl}
@@ -21,6 +30,13 @@ const StoreItem = ({id,name,price,imgUrl} : StoreItemProps) => {
           <span className="fs-2">{name}</span>
           <span className="ms-2 text-muted">{formatCurrency(price)}</span>
         </Card.Title>
+        <div className="mt-auto">
+          {num === 1 ? 
+            (<Button className="w-100">+Add to Cart</Button>)
+          : <>
+              <Button onClick={addProduct}>ADD</Button>
+            </>}
+        </div>
       </Card.Body>
     </Card>
   );
