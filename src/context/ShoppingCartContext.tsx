@@ -10,10 +10,14 @@ type ShoppingCartProviderProps ={
 }
 
 type ShoppingCartContext = {
+  openCart: ()=> void
+  closeCart: ()=> void
   getItemQ : (id:number) => number
   increaseQ : (id:number) => void
   decreseQ : (id:number) => void
   removeQ: (id:number) => void
+  cartQ: number
+  cartItem:CartItem[]
 
 }
 
@@ -25,10 +29,18 @@ export function useShoppingCart(){
 
 export function ShoppingCartProvider({children} :ShoppingCartProviderProps){
 
-  const [cartItem , setCartItem] = useState<CartItem[]>([])  
+  const [cartItem , setCartItem] = useState<CartItem[]>([]);
+  const [isOpen , setIsOpen ] = useState(false);
+
+  const openCart = () => setIsOpen(true);
+  const closeCart = () => setIsOpen(false);
+  
+  const cartQ = cartItem.reduce((q,item)=>
+    item.q + q,0
+  )
 
   function getItemQ(id:number){  
-    return cartItem.find(item=> item.id === 0)?.q || 0
+    return cartItem.find(item=> item.id === id)?.q || 0
   }
 
   function increaseQ(id:number){
@@ -38,9 +50,9 @@ export function ShoppingCartProvider({children} :ShoppingCartProviderProps){
       }else{
         return prev.map(item=>{
           if(item.id === id){
-            return {...item , q: item.q + 1 }
+            return {...item , q: item.q + 1 };
           }else{
-            return item
+            return item;
           }
         })
       }
@@ -56,7 +68,7 @@ export function ShoppingCartProvider({children} :ShoppingCartProviderProps){
           if(item.id === id){
             return {...item , q: item.q - 1 }
           }else{
-            return item
+            return item;
           }
         })
       }
@@ -65,12 +77,12 @@ export function ShoppingCartProvider({children} :ShoppingCartProviderProps){
 
   function removeQ(id:number){
     setCartItem(prev=>{
-      return prev.filter(item=> item.id !== id)
+      return prev.filter(item=> item.id !== id);
     })
   }
 
   return(
-    <ShoppingCartContext.Provider value={{getItemQ,increaseQ,decreseQ,removeQ}}>
+    <ShoppingCartContext.Provider value={{getItemQ,increaseQ,decreseQ,removeQ,cartItem,cartQ,openCart,closeCart}}>
       {children}
     </ShoppingCartContext.Provider>
   )
